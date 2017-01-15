@@ -1,0 +1,20 @@
+{
+    "name": "iris-app-room-display",
+    "private": true,
+    "dependencies": {
+        "iron-elements": "PolymerElements/iron-elements#^1.0.0",
+        "neon-elements": "PolymerElements/neon-elements#^1.0.0",
+        "page": "visionmedia/page.js#~1.6.4",
+        "paper-elements": "PolymerElements/paper-elements#^1.0.1",
+        "platinum-elements": "PolymerElements/platinum-elements#^1.1.0",
+        "polymer": "Polymer/polymer#^1.2.0",
+        "iris-polymer-elements": "https://github.com/sdk-group/iris-polymer-elements.git"
+    },
+    "devDependencies": {
+        "web-component-tester": "*"
+    },
+    "ignore": [],
+    "resolutions": {
+        "paper-menu": "4fecb43601"
+    }
+}

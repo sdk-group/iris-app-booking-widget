@@ -1,0 +1,78 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+
+</head><body><dom-module id="operator-display-pages">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        width: 100%;
+        @apply(--layout-center-justified);
+      }
+      @media all and (orientation: portrait) {
+        #ticket {
+          font-size: 16vh;
+        }
+      }
+      @media all and (orientation: landscape) {
+        #ticket {
+          font-size: 33vh;
+        }
+      }
+      iron-pages {
+        @apply(--layout-vertical);
+        @apply(--layout-center-justified);
+      }
+      .blink {
+        animation: blink-animation 3s steps(100, start) infinite;
+
+      }
+      @keyframes blink-animation {
+        0% {
+          opacity: 0.0;
+        }
+        33% {
+          opacity: 1;
+        }
+        66% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.0;
+        }
+      }
+
+      #backdrop {
+        position: fixed;
+        top: 64px;
+        bottom: 0;
+        right: 0;
+        left: 0;
+      }
+
+      #backdrop > *,
+      #holder > * {
+        position: absolute;
+        top: 64px;
+        bottom: 0;
+        right: 0;
+        left: 0;
+      }
+
+    </style>
+    <iris-operator-display id="operatordisplay" display-design="{{display_dest}}" backdrop-design="{{backdrop_dest}}" on-show-ticket="showTicket" on-hide-ticket="hideTicket" on-blink="blinkTicket"></iris-operator-display>
+    <iris-content-import on-import="placeExternalContent" dest="[[display_dest]]"></iris-content-import>
+    <iris-content-import on-import="placeBackdropContent" dest="[[backdrop_dest]]"></iris-content-import>
+
+    <iron-pages selected="[[selected]]">
+      <div id="holder"></div>
+      <div>
+        <div id="backdrop"></div>
+        <div class$="[[ticketClass]]" id="ticket">
+          [[ticket.label]]
+        </div>
+      </div>
+    </iron-pages>
+
+  </template>
+  </dom-module>
+<script src="operator-display-pages.js"></script></body></html>

@@ -1,0 +1,107 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="operator-display-pages">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        width: 100%;
+        @apply(--layout-center-justified);
+      }
+      @media all and (orientation: portrait) {
+        #ticket {
+          font-size: 16vh;
+        }
+      }
+      @media all and (orientation: landscape) {
+        #ticket {
+          font-size: 33vh;
+        }
+      }
+      iron-pages {
+        @apply(--layout-vertical);
+        @apply(--layout-center-justified);
+      }
+      .blink {
+        animation: blink-animation 3s steps(100, start) infinite;
+
+      }
+      @keyframes blink-animation {
+        0% {
+          opacity: 0.0;
+        }
+        33% {
+          opacity: 1;
+        }
+        66% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.0;
+        }
+      }
+
+      #backdrop {
+        position: fixed;
+        top: 64px;
+        bottom: 0;
+        right: 0;
+        left: 0;
+      }
+
+      #backdrop > *,
+      #holder > * {
+        position: absolute;
+        top: 64px;
+        bottom: 0;
+        right: 0;
+        left: 0;
+      }
+
+    </style>
+    <iris-operator-display id="operatordisplay" display-design="{{display_dest}}" backdrop-design="{{backdrop_dest}}" on-show-ticket="showTicket" on-hide-ticket="hideTicket" on-blink="blinkTicket"></iris-operator-display>
+    <iris-content-import on-import="placeExternalContent" dest="[[display_dest]]"></iris-content-import>
+    <iris-content-import on-import="placeBackdropContent" dest="[[backdrop_dest]]"></iris-content-import>
+
+    <iron-pages selected="[[selected]]">
+      <div id="holder"></div>
+      <div>
+        <div id="backdrop"></div>
+        <div class$="[[ticketClass]]" id="ticket">
+          [[ticket.label]]
+        </div>
+      </div>
+    </iron-pages>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'operator-display-pages',
+      ready() {
+        this.selected = 0;
+      },
+      placeExternalContent(e) {
+        let detail = e.detail;
+        Polymer.dom(this.$.holder).innerHTML = detail;
+      },
+      placeBackdropContent(e) {
+        let detail = e.detail;
+        Polymer.dom(this.$.backdrop).innerHTML = detail;
+      },
+      blinkTicket(e) {
+        this.ticket = e.detail;
+        this.ticketClass = 'blink';
+        this.set('selected', 1);
+      },
+      showTicket(e) {
+        this.ticket = e.detail;
+        this.ticketClass = 'show';
+        this.set('selected', 1);
+      },
+      hideTicket(e) {
+        this.ticketClass = 'hide';
+        this.set('selected', 0);
+      }
+    });
+  </script>
+</dom-module>

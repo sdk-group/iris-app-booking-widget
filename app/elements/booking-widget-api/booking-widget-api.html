@@ -1,0 +1,116 @@
+<link rel="import" href="../../bower_components/iris-polymer-api/iris-api.html">
+<link rel="import" href="../../bower_components/iris-polymer-screen-lock/iris-screen-lock.html">
+
+<dom-module id="booking-widget-api">
+  <template>
+    <iris-screen-lock id="locker" message="Подключение..."></iris-screen-lock>
+    <iris-api-controller id="api"></iris-api-controller>
+  </template>
+
+  <script>
+    (function () {
+
+      (function () {
+        'use strict';
+        let default_settings = [
+          {
+            name: 'API',
+            items: {
+              api_server: {
+                element: 'input',
+                label: 'Сервер',
+                default: window.location.hostname
+              },
+              api_port: {
+                element: 'input',
+                label: 'Порт',
+                default: '9000'
+              }
+            }
+          }, {
+            name: 'Дата-сервер',
+            items: {
+              data_server: {
+                element: 'input',
+                label: 'Сервер',
+                default: window.location.hostname
+              },
+              data_port: {
+                element: 'input',
+                label: 'Порт',
+                default: window.location.port
+              }
+            }
+          }, {
+            name: 'АРМ',
+            items: {
+              operator_arm_id: {
+                element: 'input',
+                label: 'ID рабочего места оператора'
+              }
+            }
+          }
+        ];
+
+        const workstation_type = 'booking-widget';
+
+        Polymer({
+          is: 'booking-widget-api',
+          ready() {
+            window.locker = this.$.locker;
+            console.log(_.capitalize(workstation_type) + ' API ready');
+            let User = IRIS.User;
+            let arm_settings = new IRIS.settings();
+            arm_settings.addDesc(default_settings);
+            //@NOTE: could we put something more useful than localhost
+            if (arm_settings.getDefaults('data_server') == 'localhost' && arm_settings.getItem('api_server'))
+              arm_settings.setDefaults('data_server', arm_settings.getItem('api_server'));
+
+            this.$.api.expose('settings', arm_settings);
+
+            let arm_operator = new User(workstation_type);
+            this.$.api.expose('user', arm_operator);
+
+            let id = arm_settings.getItem('operator_arm_id');
+
+            if (!id) {
+              return;
+            }
+
+            let params = {
+              parent: id,
+              satellite_type: 'booking-widget'
+            };
+
+            this.$.api.boot = () => {
+              return (page.current == "/settings")
+                ? false
+                : this.connect(params);
+            };
+          },
+          connect(params) {
+            this.$.locker.lock();
+
+            let login = 'booking-widget';
+            let password = '1';
+
+            return this.$.api.require('user').login(login, password, params).then(() => {
+              console.log('connection complete');
+              this.$.locker.unlock();
+              return true;
+            }).catch((e) => {
+              this.$.locker.unlock();
+
+              console.log('connection error', e);
+              setTimeout(() => {
+                console.log('reconnection in 2s');
+                this.connect(params);
+              }, 2000);
+              throw e;
+            });
+          }
+        });
+      })();
+    })();
+  </script>
+</dom-module>
